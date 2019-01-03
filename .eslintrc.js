@@ -5,7 +5,7 @@ module.exports = {
         "jquery": true
     },
     "globals": {
-        
+        '$': true
     },
     "extends": "eslint:recommended",
     "parserOptions": {

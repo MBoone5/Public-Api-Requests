@@ -1,10 +1,24 @@
 // Custom JavaScript For Public API Requests Project
 // Waiting for the document to be ready
 $(document).ready(() => {
+    // ========================================= BASIC FUNCTIONALITY / AJAX ==================================
     // refrences for important dom elements
     const $galleryDiv = $('#gallery');
     const $modalDiv = $('#modal-div');
     
+    // creating markup for search bar
+    /* even though there's no need for interpolation, a template literal is best used here
+    so the markup can be written without escape characters & maximize readability */
+    const searchHTML = `
+    <form action="#" method="get">
+        <input type="search" id="search-input" class="search-input" placeholder="Search...">
+        <input type="submit" value="&#x1F50D;" id="serach-submit" class="search-submit">
+    </form>
+    `;
+
+    // appending the search HTML
+    $('.search-container').append(searchHTML);
+
     // function to create a card for each random user from an array of user objects
     function createUserCards(userData) {
         // refrences for user information
@@ -20,14 +34,14 @@ $(document).ready(() => {
             // creating the HTML for the user card
             cardHTML += `
             <div class='card'>
-            <div class="card-img-container">
-            </div>
-            <img class="card-img" src="${userImg.large}" alt="profile picture">
-            <div class="card-info-container">
-            <h3 id="name" class="card-name cap">${userName.first} ${userName.last}</h3>
-            <p class="card-text">${userMail}</p>
-            <p class="card-text cap">${userLocation.city}, ${userLocation.state}</p>
-            </div>
+                <div class="card-img-container">
+                    <img class="card-img" src="${userImg.large}" alt="profile picture">
+                </div>
+                <div class="card-info-container">
+                    <h3 id="name" class="card-name cap">${userName.first} ${userName.last}</h3>
+                    <p class="card-text">${userMail}</p>
+                    <p class="card-text cap">${userLocation.city}, ${userLocation.state}</p>
+                </div>
             </div> 
             `;
         });
@@ -99,12 +113,35 @@ $(document).ready(() => {
     function handleX() {
         $('.modal-close-btn').click((e) => {
             // find the parent modal and hide it
-            let parentModal = $(e.target).parents('.modal-container')[0]; // this is an ELEMENT not a jQuery Object; hence no $ before the name
+            let parentModal = $(e.target).parents('.modal-container')[0];
             $(parentModal).hide();
         });
     } // close handleX function
+    // handling the search event
+    function handleSearch() {
+        // event listener on the search event
+        $('#search-input').keyup((e) => {
+            // refrence to the input
+            let inputVal = $(e.target).val().toLowerCase();
+            
+            // conditional to show or hide based on whether there is appropriate input to filter with
+            $('.card').each(function() {
+                // jqeury reference for the current .card
+                let $this = $(this); 
+
+                // if the current card contains the input: show the element, else: hide
+                if ($this.find(`h3:contains(${inputVal})`).length !== 0) {
+                    $this.show();
+                } else {
+                    $this.hide();
+                }
+            }); // close .card iteration
+
+        }); //close search event handling
+    }
+    // =========================== AJAX RELIANT FUNCTIONALITY =========================================================
     // getting random user data
-    $.getJSON('https://randomuser.me/api/?results=12&inc=picture,name,email,location,dob,phone', 
+    $.getJSON('https://randomuser.me/api/?results=12&nat=us,gb&inc=picture,name,email,location,dob,phone', 
         data => {
             // Hiding the loader when the request is complete
             $('.loader').css('display', 'none');
@@ -118,9 +155,11 @@ $(document).ready(() => {
             // event listener for user modal events
             $('.card').click(e => displayModal(e.target));
 
-            // event listenr for x buttons
+            // handling the x functionality
             handleX();
 
-        }); // close Random User API request
+            // handling the search function
+            handleSearch();
 
+        }); // close Random User API request    
 }); // close doc.ready

@@ -53,7 +53,7 @@ $(document).ready(() => {
         // creating the HTML for the user modals
         let modalHTML = '';
         
-        userData.forEach(userData => {
+        userData.forEach(function(userData, index){
             // references for user information
             let userName = userData.name;
             let userMail = userData.email;
@@ -78,8 +78,9 @@ $(document).ready(() => {
                 </div>
 
                 <div class="modal-btn-container">
-                    <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
-                    <button type="button" id="modal-next" class="modal-next btn">Next</button>
+
+                    ${index !== 0 ? '<button type="button" id="modal-prev" class="modal-prev btn">Prev</button>' : ''}
+                    ${index !== 11 ? '<button type="button" id="modal-next" class="modal-next btn">Next</button>' : ''}
                 </div>
             </div>
             `;
@@ -87,35 +88,62 @@ $(document).ready(() => {
 
         return modalHTML;
     } // close createUserModals function
-    function displayModal(target) {
-        // traversing upwards to the parent .card div
-        const parents = $(target).parentsUntil('.gallery');
-        let parentCard;
+    function displayModal() {
+        $('.card').click((e) => {
+            // traversing upwards to the parent .card div
+            const parents = $(e.target).parentsUntil('.gallery');
+            let parentCard;
 
-        /* if there are no ancestors to traverse to .div, 
-        then e.target is the parent div.card
-        if there are ancestors, then the last element will be the parent div.card */
-        if (parents.length === 0) {
-            parentCard = target;
-        } else {
-            parentCard = parents[parents.length - 1]; // accessing the last element in the array
-        }
+            /* if there are no ancestors to traverse to .div, 
+            then e.target is the parent div.card
+            if there are ancestors, then the last element will be the parent div.card */
+            if (parents.length === 0) {
+                parentCard = e.target;
+            } else {
+                parentCard = parents[parents.length - 1]; // accessing the last element in the array
+            }
 
-        // finding the name of the employee
-        const $empName = $(parentCard).find('.card-info-container>h3').text();
+            // finding the name of the employee
+            const $empName = $(parentCard).find('.card-info-container>h3').text();
 
-        // reference to the current modal
-        const $currentModal = $(`.modal-container:has(h3:contains(${$empName}))`);
-        
-        // displaying the modal
-        $currentModal.show();
+            // reference to the current modal
+            const $currentModal = $(`.modal-container:has(h3:contains(${$empName}))`);
+
+            // displaying the modal
+            $currentModal.show();
+        }); // close display modal handler
     } // close displayModal function
+    // function to handle the modal prev/next btns
+    function handleSlide() {
+        // event listener for modal prev/next btns
+        $('.modal-btn-container>button').click((e) => {
+            // finding the index of the current element
+            const parentModal = $(e.target).parents('.modal-container')[0];
+            let parentIndex = $('.modal-container').index(parentModal);
+
+            // finding the index of the target modal
+            let targetIndex;
+            if ($(e.target).attr('id') === 'modal-next') {
+                targetIndex = parentIndex + 1;
+            } else {
+                targetIndex = parentIndex - 1;
+            }
+
+            // hiding the current modal
+            $(parentModal).hide();
+
+            // showing the target modal
+            const targetModal = $('.modal-container').get(targetIndex);
+            $(targetModal).show();
+        });
+    }
+    // function to handle modal x button
     function handleX() {
         $('.modal-close-btn').click((e) => {
             // find the parent modal and hide it
             let parentModal = $(e.target).parents('.modal-container')[0];
             $(parentModal).hide();
-        });
+        }); //
     } // close handleX function
     // handling the search event
     function handleSearch() {
@@ -137,14 +165,14 @@ $(document).ready(() => {
                 }
             }); // close .card iteration
 
-        }); //close search event handling
-    }
-    // =========================== AJAX RELIANT FUNCTIONALITY =========================================================
+        }); // close search event handler
+    } //close search event function
+    // =========================== API REQUEST =========================================================
     // getting random user data
     $.getJSON('https://randomuser.me/api/?results=12&nat=us,gb&inc=picture,name,email,location,dob,phone', 
         data => {
             // Hiding the loader when the request is complete
-            $('.loader').css('display', 'none');
+            $('.loader').hide();
 
             // appending the data into the gallery div
             $galleryDiv.append(createUserCards(data.results));
@@ -152,8 +180,11 @@ $(document).ready(() => {
             // appending modals to the modal-div
             $modalDiv.append(createUserModals(data.results));
             
-            // event listener for user modal events
-            $('.card').click(e => displayModal(e.target));
+            // handling modal display
+            displayModal();
+
+            // handling modal slide
+            handleSlide();
 
             // handling the x functionality
             handleX();

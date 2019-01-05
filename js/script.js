@@ -60,7 +60,7 @@ $(document).ready(() => {
                         <hr>
                         <p class="modal-text">${userPhone}</p>
                         <p class="modal-text">${userLocation.street}, ${userLocation.city}, ${userLocation.state} ${userLocation.postcode}</p>
-                        <p class="modal-text">Birthday: ${userDob}</p>
+                        <p class="modal-text">Birthday: ${userDob.date.substring(0, 10)}</p>
                     </div>
                 </div>
 

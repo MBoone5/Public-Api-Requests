@@ -92,6 +92,7 @@ header h1 {
     border: 1px solid rgba(50, 50, 50, 0.3);
     transition: .4s ease-out;
     overflow: hidden;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.356); /* added box shadow */
 }
 
 .card-img {
@@ -106,7 +107,7 @@ header h1 {
 
 .card-name {
     margin: 20px auto 0;
-    text-transform: capitalize;
+    text-transform: capitalize; /* capitalize the names of employees */
 }
 
 .card-text {

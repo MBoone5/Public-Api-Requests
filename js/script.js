@@ -1,7 +1,6 @@
 // Custom JavaScript For Public API Requests Project
 // Waiting for the document to be ready
 $(document).ready(() => {
-    // ========================================= BASIC FUNCTIONALITY / AJAX ==================================
     // refrences for important dom elements
     const $galleryDiv = $('#gallery');
     const $modalDiv = $('#modal-div');
@@ -53,7 +52,7 @@ $(document).ready(() => {
         // creating the HTML for the user modals
         let modalHTML = '';
         
-        userData.forEach(function(userData, index){
+        userData.forEach((userData, index) => {
             // references for user information
             let userName = userData.name;
             let userMail = userData.email;
@@ -78,12 +77,12 @@ $(document).ready(() => {
                 </div>
 
                 <div class="modal-btn-container">
-
+                    
                     ${index !== 0 ? '<button type="button" id="modal-prev" class="modal-prev btn">Prev</button>' : ''}
                     ${index !== 11 ? '<button type="button" id="modal-next" class="modal-next btn">Next</button>' : ''}
                 </div>
             </div>
-            `;
+            `; // Above ^^^ The ternary operator is used along with interpolation to stop the creation of prev or next brns based on the index of the modal
         }); // close modal html iteration
 
         return modalHTML;

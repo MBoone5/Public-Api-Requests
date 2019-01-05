@@ -2,7 +2,8 @@
 // Waiting for the document to be ready
 $(document).ready(() => {
     // refrences for important dom elements
-    const galleryDiv = $('#gallery');
+    const $galleryDiv = $('#gallery');
+    const $modalDiv = $('#modal-div');
     
     // function to create a card for each random user from an array of user objects
     function createUserCards(userData) {
@@ -74,19 +75,57 @@ $(document).ready(() => {
         return modalHTML;
     }
     
-    
+    function displayModal(target) {
+        // traversing upwards to the parent .card div
+        const parents = $(target).parentsUntil('.gallery');
+        let parentCard;
 
+        /* if there are no ancestors to traverse to .div, 
+        then e.target is the parent div.card
+        if there are ancestors, then the last element will be the parent div.card */
+        if (parents.length === 0) {
+            parentCard = target;
+        } else {
+            parentCard = parents[parents.length - 1]; // accessing the last element in the array
+        }
+
+        // finding the name of the employee
+        const $empName = $(parentCard).find('.card-info-container>h3').text();
+
+        // reference to the current modal
+        const $currentModal = $(`.modal-container:has(h3:contains(${$empName}))`);
+        
+        // displaying the modal
+        $currentModal.show();
+    }
+    function handleX() {
+        $('.modal-close-btn').click((e) => {
+            // find the parent modal and hide it
+            let parentModal = $(e.target).parents('.modal-container')[0]; // this is an ELEMENT not a jQuery Object; hence no $ before the name
+            $(parentModal).hide();
+        });
+    }
     // getting random user data
     $.getJSON('https://randomuser.me/api/?results=12&inc=picture,name,email,location,dob,phone', 
         data => {
-            // Hiding the loader when the XHR is done
+            // Hiding the loader when the request is complete
             $('.loader').css('display', 'none');
 
             // appending the data into the gallery div
-            galleryDiv.append(createUserCards(data.results));
-        }
-    ); // close Random User API request
+            $galleryDiv.append(createUserCards(data.results));
+
+            // appending modals to the modal-div
+            $modalDiv.append(createUserModals(data.results));
+            
+            // event listener for user modal events
+            $('.card').click(e => displayModal(e.target));
+
+            // event listenr for x buttons
+            handleX();
+
+        }); // close Random User API request
+
     
-    // event listener for user modals
+    
     
 }); // close doc.ready

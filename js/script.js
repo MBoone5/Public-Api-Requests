@@ -34,7 +34,6 @@ $(document).ready(() => {
         
         return cardHTML;
     } // close user card function
-
     // function to create a modal for each random user from an array of user objects
     function createUserModals(userData) {
         // creating the HTML for the user modals
@@ -73,8 +72,7 @@ $(document).ready(() => {
         }); // close modal html iteration
 
         return modalHTML;
-    }
-    
+    } // close createUserModals function
     function displayModal(target) {
         // traversing upwards to the parent .card div
         const parents = $(target).parentsUntil('.gallery');
@@ -97,14 +95,14 @@ $(document).ready(() => {
         
         // displaying the modal
         $currentModal.show();
-    }
+    } // close displayModal function
     function handleX() {
         $('.modal-close-btn').click((e) => {
             // find the parent modal and hide it
             let parentModal = $(e.target).parents('.modal-container')[0]; // this is an ELEMENT not a jQuery Object; hence no $ before the name
             $(parentModal).hide();
         });
-    }
+    } // close handleX function
     // getting random user data
     $.getJSON('https://randomuser.me/api/?results=12&inc=picture,name,email,location,dob,phone', 
         data => {
@@ -125,7 +123,4 @@ $(document).ready(() => {
 
         }); // close Random User API request
 
-    
-    
-    
 }); // close doc.ready
